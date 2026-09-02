@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consent Management Demo</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+}
+
+.container{
+    width:450px;
+    margin:40px auto;
+    background:#fff;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#0066cc;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+    font-size:16px;
+}
+
+button:hover{
+    background:#0055aa;
+}
+
+#dashboard{
+    display:none;
+}
+
+#consentContainer{
+    margin-top:20px;
+}
+
+.logout{
+    background:#d9534f;
+}
+
+.logout:hover{
+    background:#c9302c;
+}
+
+#consent-root{
+    margin-top:20px;
+}
+
+#error-message{
+    color:red;
+}
+</style>
+
+
+<style id="consent-alignment-fix">
+/* ===== Consent form alignment fix ===== */
+.widget-container {
+  width: 90% !important;
+  max-width: 700px !important;
+  margin: 20px auto !important;
+  box-sizing: border-box !important;
+}
+
+#consent-root {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.permission-block {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 0 22px 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+.permission-block > p,
+.permission-block > h1,
+.permission-block > h2,
+.permission-block > h3,
+.permission-block > h4,
+.permission-block > h5,
+.permission-block > h6 {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  margin: 0 0 8px 0 !important;
+  text-align: left !important;
+  line-height: 1.35 !important;
+}
+
+.permission-block > label {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 7px 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+.permission-block > label input[type="radio"],
+.permission-block > label input[type="checkbox"] {
+  flex: 0 0 auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+.permission-block > label span,
+.permission-block > label {
+  text-align: left !important;
+}
+
+/* Native select used by the consent script */
+.permission-block > select {
+  display: block !important;
+  margin: 8px 0 0 0 !important;
+  min-width: 160px !important;
+}
+
+/* Custom dropdown */
+.permission-block .ms-dropdown {
+  width: 100% !important;
+  max-width: 420px !important;
+  margin: 8px 0 0 0 !important;
+  box-sizing: border-box !important;
+}
+
+.permission-block .ms-control {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Keep consent buttons aligned side-by-side and within the widget */
+#button-group,
+.button-group {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-top: 20px !important;
+}
+
+#button-group button,
+.button-group button {
+  flex: 0 0 48% !important;
+  max-width: 320px !important;
+  box-sizing: border-box !important;
+}
+
+/* Prevent long consent text from forcing horizontal overflow */
+.permission-block table {
+  max-width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.permission-block img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+@media (max-width: 600px) {
+  .widget-container {
+    width: 96% !important;
+    padding: 18px !important;
+  }
+
+  #button-group,
+  .button-group {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #button-group button,
+  .button-group button {
+    flex: 1 1 auto !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<!---------------- LOGIN ------------------>
+
+<div class="container" id="loginPage">
+
+<h2>Login</h2>
+
+<input
+type="email"
+id="email"
+placeholder="Enter Email"
+required>
+
+<input
+type="password"
+id="password"
+placeholder="Enter Password"
+required>
+
+<button onclick="login()">
+Login
+</button>
+
+</div>
+
+<!---------------- DASHBOARD ------------------>
+
+<div class="container" id="dashboard">
+
+<h2>
+Welcome
+</h2>
+
+<p>
+Logged in as:
+<b id="loggedUser"></b>
+</p>
+
+<button onclick="loadConsent()">
+Open Consent Form
+</button>
+
+<br><br>
+
+<button
+class="logout"
+onclick="logout()">
+Logout
+</button>
+
+<div id="consentContainer">
+
+<!------------ Existing Consent Widget ------------>
+
+<div class="widget-container">
+
+<div id="logo-area" class="logo-area"></div>
+
+<div id="language-wrapper" style="display:none;">
+<select id="langSelect"></select>
+</div>
+
+<div id="consent-root">
+Loading consent form...
+</div>
+
+<div id="button-group" class="button-group">
+<button id="cancelBtn" class="cancel" style="display:none;"></button>
+<button id="submitBtn" class="submit" style="display:none;"></button>
+</div>
+
+<div id="error-message"></div>
+
+<div id="toast"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/***************************************************
+ Consent Widget Configuration
+****************************************************/
+
+window.consentWidgetConfig = {
+
+consentFormId:"6592d926-66eb-4e1b-b454-be967a5e95b2",
+
+apiUrl:
+"https://seqrite.fyers.ad/cpm-api/open-api/v1/consent/v1/getConsentFormById",
+
+submitApiUrl:
+"https://seqrite.fyers.ad/cpm-api/open-api/v1/consent/v1/createOrUpdateConsent",
+
+//tenantToken:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODE2Mzk1MSwiZXhwIjoxNzg4MjUwMzUxfQ.dl-Vumqd-CNJ8I_L0WJuT4I_ig9D4Q0LIzENazwkxDQ",
+
+signatureServiceUrl:
+"https://seqrite.fyers.ad/cpm-sign",
+
+dataPrincipalId:[],
+
+customAttributes:{
+ticketID:"",
+registrationID:""
+},
+
+showButtons:true,
+showLanguageDropdown:true,
+enableCheckboxes:true,
+enableRadioButtons:true,
+enableDropdowns:true,
+receivedType:"WEB"
+
+};
+
+
+/***************************************************
+ Update Widget Config
+****************************************************/
+
+window.updateConsentConfig=function(token,dataPrincipalId){
+
+window.consentWidgetConfig.tenantToken=token;
+
+window.consentWidgetConfig.dataPrincipalId=dataPrincipalId;
+
+if(!window.scriptLoaded){
+
+const script=document.createElement("script");
+
+script.src="script.js";
+
+script.onload=function(){
+
+window.scriptLoaded=true;
+
+console.log("Consent Widget Loaded");
+
+};
+
+document.body.appendChild(script);
+
+}
+
+};
+
+
+/***************************************************
+ Login
+****************************************************/
+
+function login(){
+
+const email=document.getElementById("email").value;
+
+const password=document.getElementById("password").value;
+
+if(email==="" || password===""){
+
+alert("Enter Email and Password");
+
+return;
+
+}
+
+/* Dummy Login */
+
+localStorage.setItem("email",email);
+
+document.getElementById("loginPage").style.display="none";
+
+document.getElementById("dashboard").style.display="block";
+
+document.getElementById("loggedUser").innerHTML=email;
+
+}
+
+
+/***************************************************
+ Load Consent Form
+****************************************************/
+
+function loadConsent(){
+
+const email=localStorage.getItem("email");
+
+/* Fetch tenant token from backend if required */
+
+const token="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODI2MjI5NSwiZXhwIjoxNzg4MzQ4Njk1fQ.HGYLX4f9eB7MakcMNpbh9DAes9kjcmxSppSXzTPjke4";
+
+/* Dynamic Data Principal */
+
+const dp=[
+
+{
+
+key:"email",
+
+value:email
+
+}
+
+];
+
+updateConsentConfig(token,dp);
+
+}
+
+
+/***************************************************
+ Logout
+****************************************************/
+
+function logout(){
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("email");
+    window.location.href = "index.html";
+}
+
+
+/***************************************************
+ Auto Login
+****************************************************/
+
+window.onload=function(){
+
+const email=localStorage.getItem("email");
+
+if(email){
+
+document.getElementById("loginPage").style.display="none";
+
+document.getElementById("dashboard").style.display="block";
+
+document.getElementById("loggedUser").innerHTML=email;
+
+}
+
+}
+function decodeJwtPayload(token) {
+    try {
+        const parts = token.split(".");
+
+        if (parts.length !== 3) {
+            throw new Error("Invalid JWT format");
+        }
+
+        const base64Url = parts[1];
+
+        const base64 = base64Url
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map(function (c) {
+                    return "%" +
+                        ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join("")
+        );
+
+        return JSON.parse(jsonPayload);
+
+    } catch (error) {
+        console.error("JWT decode failed:", error);
+        return null;
+    }
+}
+// Named distinctly from script.js's AES_KEY_B64 to avoid a duplicate global const declaration.
+const DEMO_AES_KEY_B64 = "el+1+epeGlCquCYLsk3zyQTsq3KUKQKL9QcV0B9KIS8=";
+
+// Reverse of script.js's encryptPayload: strips the 12-byte IV prefix and
+// AES-GCM decrypts the remainder, returning the parsed JSON body.
+async function decryptPayload(base64Cipher) {
+    const keyBytes = Uint8Array.from(atob(DEMO_AES_KEY_B64), c => c.charCodeAt(0));
+    const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
+
+    const combined = Uint8Array.from(atob(base64Cipher), c => c.charCodeAt(0));
+    const iv = combined.slice(0, 12);
+    const cipherBytes = combined.slice(12);
+
+    const plainBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, cipherBytes);
+    const plainText = new TextDecoder().decode(plainBuffer);
+
+    return JSON.parse(plainText);
+}
+
+async function mapConsentFormResponse(apiResponse) {
+
+    if (!apiResponse || !apiResponse.response) {
+        throw new Error("Invalid API response");
+    }
+
+    const jwtPayload = decodeJwtPayload(apiResponse.response.payload);
+
+    if (!jwtPayload) {
+        throw new Error("Unable to decode consent payload");
+    }
+
+    console.log("Decoded JWT Payload:", jwtPayload);
+
+    const responseWrapper = jwtPayload.data && jwtPayload.data.response;
+
+    if (!responseWrapper) {
+        throw new Error("Consent form data not found");
+    }
+
+    const payloadEncryptionEnabled = !!responseWrapper.payloadEncryptionEnabled;
+
+    // When encryption is enabled, responseWrapper.data is a base64 AES-GCM blob
+    // instead of the plain { response: [...] } object.
+    const innerData = payloadEncryptionEnabled
+        ? await decryptPayload(responseWrapper.data)
+        : responseWrapper.data;
+
+    const consentData =
+        innerData?.response?.[0] ||
+        responseWrapper?.response?.[0];
+
+    if (!consentData) {
+        throw new Error("Consent form data not found");
+    }
+
+    return { consentData, payloadEncryptionEnabled };
+}
+</script>
+
+
+<script>
+/* ================= Login -> Consent Page ================= */
+(function () {
+    const loggedIn = localStorage.getItem("loggedIn");
+    const email = localStorage.getItem("email") || "";
+
+    if (loggedIn !== "true") {
+        window.location.replace("index.html");
+        return;
+    }
+
+    window.addEventListener("load", function () {
+        const token =
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODI2MjI5NSwiZXhwIjoxNzg4MzQ4Njk1fQ.HGYLX4f9eB7MakcMNpbh9DAes9kjcmxSppSXzTPjke4";
+
+        const dataPrincipal = [
+            { key: "email", value: email }
+        ];
+
+        if (typeof updateConsentConfig === "function") {
+            updateConsentConfig(token, dataPrincipal);
+        } else {
+            console.error("Consent initialization function is not available.");
+        }
+    });
+})();
+</script>
+
+
+<script>
+/* Consent page is displayed after successful login */
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const email = localStorage.getItem("email") || "";
+    const loggedUser = document.getElementById("loggedUser");
+    if (loggedUser) {
+        loggedUser.textContent = email;
+    }
+});
+</script>
+
+</body>
+</html>
