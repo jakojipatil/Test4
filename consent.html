@@ -311,7 +311,7 @@ apiUrl:
 submitApiUrl:
 "https://seqrite.fyers.ad/cpm-api/open-api/v1/consent/v1/createOrUpdateConsent",
 
-//tenantToken:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODE2Mzk1MSwiZXhwIjoxNzg4MjUwMzUxfQ.dl-Vumqd-CNJ8I_L0WJuT4I_ig9D4Q0LIzENazwkxDQ",
+tenantToken:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODE2Mzk1MSwiZXhwIjoxNzg4MjUwMzUxfQ.dl-Vumqd-CNJ8I_L0WJuT4I_ig9D4Q0LIzENazwkxDQ",
 
 signatureServiceUrl:
 "https://seqrite.fyers.ad/cpm-sign",
@@ -405,7 +405,7 @@ const email=localStorage.getItem("email");
 
 /* Fetch tenant token from backend if required */
 
-//const token="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODI2MjI5NSwiZXhwIjoxNzg4MzQ4Njk1fQ.HGYLX4f9eB7MakcMNpbh9DAes9kjcmxSppSXzTPjke4";
+const token="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODI2MjI5NSwiZXhwIjoxNzg4MzQ4Njk1fQ.HGYLX4f9eB7MakcMNpbh9DAes9kjcmxSppSXzTPjke4";
 
 /* Dynamic Data Principal */
 
@@ -559,7 +559,7 @@ async function mapConsentFormResponse(apiResponse) {
     }
 
     window.addEventListener("load", function () {
-        //const token =
+        const token =
             "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMDE0NTczNi01MmIyLTRkMjEtOTQ2My0zZDI2NTQyMDQzZjciLCJwcm9kdWN0IjoiQ29uc2VudCBNYW5hZ21lbnQiLCJzY29wZSI6ImFjY2VzcyIsImlhdCI6MTc4ODI2MjI5NSwiZXhwIjoxNzg4MzQ4Njk1fQ.HGYLX4f9eB7MakcMNpbh9DAes9kjcmxSppSXzTPjke4";
 
         const dataPrincipal = [
